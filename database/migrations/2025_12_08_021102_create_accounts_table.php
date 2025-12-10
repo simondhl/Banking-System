@@ -29,10 +29,10 @@ return new class extends Migration
             ->constrained('account_statuses')
             ->cascadeOnDelete()
             ->cascadeOnUpdate();
-            $table->timestamps();
             $table->bigInteger('parent_account_id')->nullable();
             $table->string('account_number');
-            $table->decimal('balance',15,2);
+            $table->decimal('balance', 15, 2);
+            $table->timestamps();
         });
     }
 

@@ -14,7 +14,7 @@ class AuthService
 
     $user = User::where('user_number', ($request['user_number']))->first();
 
-    // check if user_number and password(Hashed) match 
+    // check if user_number and password(Hashed) match
     if ($user && Hash::check($request['password'], $user->password)) {
 
       // create access token
