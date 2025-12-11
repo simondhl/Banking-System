@@ -9,6 +9,7 @@ use App\Models\Account_hierarchy;
 use App\Models\Account_status;
 use App\Models\Account_type;
 use App\Models\User;
+use App\Services\InterestStrategies\InterestCalculator;
 use Illuminate\Support\Facades\Hash;
 
 use function PHPUnit\Framework\isEmpty;
@@ -41,7 +42,7 @@ class AccountService
 
             $parentUser = User::where('user_number', $request['parent_account_number'])->first();
             $parentAccount = Account::where('user_id', $parentUser->id)->first();
-            if (Account_hierarchy::where('id', $parentAccount['account_hierarchy_id'])->account_hierarchy_name !== "group account") {
+            if (Account_hierarchy::where('id', $parentAccount['account_hierarchy_id'])->first()->hierarchy_name !== "group account") {
                 return [
                     'message' => 'The parent account should be group account',
                     'status' => false,
@@ -88,11 +89,16 @@ class AccountService
         }
         $tree = AccountHierarchyBuilder::buildTree($account);
 
+        $calculator = new InterestCalculator();
+        $interest = $calculator->calculate($account);
+
         return [
             'total_balance' => $tree->getBalance(),
             'account_numbers' => $tree->getAccountNumber(),
             'main_account' => AccountTransformer::transformAccount($account),
             'children' => AccountTransformer::transformComposite($tree, $account->id),
+            'interest' => $interest,
+            'new_balance_after_interest' => $account->balance + $interest,
         ];
     }
     public function update_account(array $request, $id)
