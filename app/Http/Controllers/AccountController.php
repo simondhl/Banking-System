@@ -44,7 +44,7 @@ class AccountController extends Controller
         $result = $this->accountService->search_account($request->validated());
         if (!$result) {
             return response()->json(['message' =>
-            'The account does not exist'], 404);
+            'The account does not exist'], status: 404);
         }
         return response()->json($result, 200);
     }

@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
   // Employee Routes
   Route::middleware('role:employee')->group(function () {
         Route::post('/CreateAccount', [AccountController::class, 'create_account']);
-        Route::post('/CloseAccount/{id}', [AccountController::class, 'close_account']);
+        Route::get('/CloseAccount/{id}', [AccountController::class, 'close_account']);
         Route::post('/SearchAccount',[AccountController::class,'search_account']);
     //Transactions: Deposis-withdrawal, Transfer between accounts
         Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);

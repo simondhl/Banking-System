@@ -71,7 +71,7 @@ class AccountService
     {
         $account = Account::where('id', $id)->first();
         if ($account) {
-            $account['account_status_id'] = 4;
+            $account->close();
             $responseData = [
                 'message' => 'Account cloased successfully'
             ];
@@ -115,8 +115,19 @@ class AccountService
             $updatedData['parent_account_id'] = $parentAccount['id'];
         }
         if (isset($request['account_status'])) {
-            $accountStatus = Account_status::where('status_name', $request['account_status'])->first();
-            $updatedData['account_status_id'] = $accountStatus['id'];
+            $status = strtolower($request['account_status']);
+
+            $result = match ($status) {
+                'closed'   => $account->close(),
+                'frozen'   => $account->freeze(),
+                'suspended' => $account->suspend(),
+                'active'   => $account->activate(),
+                default    => ['status' => false, 'message' => 'Invalid account status'],
+            };
+
+            if (isset($result['status']) && $result['status'] === false) {
+                return $result;
+            }
         }
         if (isEmpty($updatedData)) {
             return [

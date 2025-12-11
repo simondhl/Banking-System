@@ -3,6 +3,11 @@
 namespace App\Models;
 
 use App\Composite\AccountComponent;
+use App\States\AccountStateInterface;
+use App\States\ActiveState;
+use App\States\ClosedState;
+use App\States\FrozenState;
+use App\States\SuspendedState;
 use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model implements AccountComponent
@@ -56,5 +61,35 @@ class Account extends Model implements AccountComponent
     public function getChildren()
     {
         return $this->children;
+    }
+
+    public function getState()
+    {
+        return match ($this->account_status_id) {
+            1 => new ActiveState(),
+            2 => new FrozenState(),
+            3 => new SuspendedState(),
+            4 => new ClosedState(),
+            default => new ActiveState(),
+        };
+    }
+    public function close()
+    {
+        return $this->getState()->close($this);
+    }
+
+    public function freeze()
+    {
+        return $this->getState()->freeze($this);
+    }
+
+    public function suspend()
+    {
+        return $this->getState()->suspend($this);
+    }
+
+    public function activate()
+    {
+        return $this->getState()->activate($this);
     }
 }
