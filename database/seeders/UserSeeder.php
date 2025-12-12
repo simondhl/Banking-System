@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Account;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -44,6 +45,15 @@ class UserSeeder extends Seeder
           'location' => 'Damascus',
           'role_id' => '2',
         ]);
+
+        Account::query()->create([
+          'user_id' => '1',
+          'account_type_id' => '2',
+          'account_hierarchy_id' => '1',
+          'account_status_id' => '1',
+          'account_number' => '120300999',
+          'balance' => '0.00',
+        ]);        
 
     }
 }

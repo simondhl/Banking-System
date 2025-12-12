@@ -9,6 +9,7 @@ use App\Models\Account_hierarchy;
 use App\Models\Account_type;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Services\InterestStrategies\InterestCalculator;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -90,11 +91,16 @@ class AccountService
         }
         $tree = AccountHierarchyBuilder::buildTree($account);
 
+        $calculator = new InterestCalculator();
+        $interest = $calculator->calculate($account);
+
         return [
             'total_balance' => $tree->getBalance(),
             'account_numbers' => $tree->getAccountNumber(),
             'main_account' => AccountTransformer::transformAccount($account),
             'children' => AccountTransformer::transformComposite($tree, $account->id),
+            'interest' => $interest,
+            'new_balance_after_interest' => $account->balance + $interest,
         ];
     }
     public function update_account(array $request, $id)

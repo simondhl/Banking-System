@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\Accounts_transaction;
 use App\Models\Transaction;
+use App\Services\TransactionApprovalChain\AutoApprovalHandler;
+use App\Services\TransactionApprovalChain\ManagerApprovalHandler;
 use Illuminate\Support\Facades\DB;
 
 class TransactionService
@@ -24,6 +26,14 @@ class TransactionService
     if (!$validation['success']) {
         return $validation; 
     }
+
+    // $approval = $this->runApprovalChain($amount, auth()->user());
+    // if (!$approval['approved']) {
+    //     return [
+    //         'success' => false,
+    //         'message' => $approval['message']
+    //     ];
+    // }
 
     // to make sure all transaction steps happened as a one block (ACID)
     DB::transaction(function () use ($account, $amount, $type) {
@@ -101,6 +111,14 @@ class TransactionService
         return $validation; 
     }
 
+    // $approval = $this->runApprovalChain($amount, auth()->user());
+    // if (!$approval['approved']) {
+    //     return [
+    //         'success' => false,
+    //         'message' => $approval['message']
+    //     ];
+    // }
+
     // to make sure all transaction steps happened as a one block (ACID)
     DB::transaction(function () use ($account_sender, $account_reciever, $amount) {
       // apply transfere transaction
@@ -133,5 +151,16 @@ class TransactionService
     ];
   }
 
+
+  private function runApprovalChain($amount, $user)
+  {
+      $auto = new AutoApprovalHandler();
+      $manager = new ManagerApprovalHandler();
+  
+      // Build the chain of responsibility
+      $auto->setNext($manager);
+  
+      return $auto->handle($amount, $user);
+  }
 
 }
