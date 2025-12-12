@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Composite\AccountComponent;
-use App\States\AccountStateInterface;
 use App\States\ActiveState;
 use App\States\ClosedState;
 use App\States\FrozenState;

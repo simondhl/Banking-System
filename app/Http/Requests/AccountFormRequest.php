@@ -52,7 +52,7 @@ class AccountFormRequest extends FormRequest
                 'account_number' => ['required', 'string']
             ],
             'update_account' => [
-                'account_status' =>  ['string', 'max:255', 'exists:account_statuses,status_name'],
+                'account_status' =>  ['string', 'max:255', 'exists:account_statuses,status'],
                 'parent_account_number' => ['string', 'max:255', 'exists:accounts,account_number', new NoHtml]
             ],
             default => [],

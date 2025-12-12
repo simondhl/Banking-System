@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/CreateAccount', [AccountController::class, 'create_account']);
         Route::get('/CloseAccount/{id}', [AccountController::class, 'close_account']);
         Route::post('/SearchAccount',[AccountController::class,'search_account']);
+        Route::post('/UpdateAccount/{id}', [AccountController::class, 'update_account']);
     //Transactions: Deposis-withdrawal, Transfer between accounts
         Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
         Route::post('/Transfer', [TransactionController::class, 'transfer']);
