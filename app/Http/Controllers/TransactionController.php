@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionFormRequest;
 use App\Services\TransactionService;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -26,5 +27,9 @@ class TransactionController extends Controller
         $result = $this->transactionService->transfer($request->validated());
 
         return response()->json($result, $result['success'] ? 200 : 400);
+    }
+    public function get_transactions_for_customer(){
+        $result = $this->transactionService->get_transaction_for_customer();
+        return response()->json($result, 200);
     }
 }

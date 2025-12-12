@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('accounts_transactions', function (Blueprint $table) {
+        Schema::create('account_schedule_task', function (Blueprint $table) {
             $table->id();
-             $table->foreignId('account_id')
-            ->constrained('accounts')
-            ->cascadeOnDelete()
-            ->cascadeOnUpdate();
-            $table->foreignId('transaction_id')
-            ->constrained('transactions')
-            ->cascadeOnDelete()
-            ->cascadeOnUpdate();
+            $table->foreignId('account_id')
+                ->constrained('accounts')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('schedule_task_id')
+                ->constrained('schedule_tasks')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string('sending_type');
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('accounts_transactions');
+        Schema::dropIfExists('account_schedule_task');
     }
 };
