@@ -20,7 +20,7 @@ abstract class ApprovalHandler
 
         return [
             'approved' => true,
-            'message' => 'Transaction approved automatically.'
+            'message' => 'Transaction approved automatically'
         ];
     }
 }

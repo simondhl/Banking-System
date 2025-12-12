@@ -3,22 +3,23 @@
 namespace App\Services;
 
 use App\Models\Account;
-use App\Models\Accounts_transaction;
-use App\Models\Transaction;
+use App\Models\Accounts_schedule_task;
+use App\Models\Schedule_task;
 use App\Services\TransactionApprovalChain\AutoApprovalHandler;
 use App\Services\TransactionApprovalChain\ManagerApprovalHandler;
 use Illuminate\Support\Facades\DB;
 
-class TransactionService
+class ScheduleTaskService
 {
 
-  public function deposit_or_withdrawal(array $request)
+  public function deposit_or_withdrawal_schedule(array $request)
   {
 
     $account = Account::where('account_number', ($request['account_number']))->first();
 
     $amount = $request['amount'];
     $type = strtolower($request['transaction_type']);
+    $date = $request['date'];
 
     // validate if account able to do the transaction
     $validation = $this->validate_account_for_transaction($account, $type, $amount);
@@ -37,33 +38,23 @@ class TransactionService
     }
 
     // to make sure all transaction steps happened as a one block (ACID)
-    DB::transaction(function () use ($account, $amount, $type) {
-    // apply transaction
-      if ($type === 'deposit') {
-          $account->balance += $amount;
-      }
+    DB::transaction(function () use ($account, $amount, $type, $date) {
     
-      if ($type === 'withdrawal') {
-          $account->balance -= $amount;
-      }
-    
-      $account->save();
-    
-      $transaction = Transaction::create([
+      $schedule_task = Schedule_task::create([
           'type'   => $type,
           'amount' => $amount,
-          // 'status' => true,
+          'date' => $date,
       ]);
-      $accounts_transaction = Accounts_transaction::create([
+      $account_schedule_task = Accounts_schedule_task::create([
           'account_id'   => $account->id,
-          'transaction_id' => $transaction->id,
+          'schedule_task_id' => $schedule_task->id,
           'sending_type' => $type,
       ]);
     });
 
     return [
       'success' => true,
-      'message' => 'Transaction successful',
+      'message' => 'Scheduled transaction successful',
     ];
   }
 
@@ -76,7 +67,7 @@ class TransactionService
       if (in_array($account_status, $invalidStatuses)) {
           return [
             'success' => false,
-            'message' => "This account is {$account_status}, transactions are not allowed"
+            'message' => "This account is {$account_status}, scheduled transactions are not allowed"
         ];
       }
 
@@ -93,13 +84,14 @@ class TransactionService
   }
 
 
-  public function transfer(array $request)
+  public function transfer_schedule(array $request)
   {
 
     $account_sender = Account::where('account_number', ($request['account_number_sender']))->first();
     $account_reciever = Account::where('account_number', ($request['account_number_reciever']))->first();
 
     $amount = $request['amount'];
+    $date = $request['date'];
 
     // validate if both accounts are able to do the transaction (sender and receiver)
     $validation = $this->validate_account_for_transaction($account_sender, 'transfer_sender', $amount);
@@ -122,34 +114,28 @@ class TransactionService
     }
 
     // to make sure all transaction steps happened as a one block (ACID)
-    DB::transaction(function () use ($account_sender, $account_reciever, $amount) {
-      // apply transfere transaction
-      $account_sender->balance -= $amount;
-      $account_reciever->balance += $amount;
+    DB::transaction(function () use ($account_sender, $account_reciever, $amount, $date) {
 
-      $account_sender->save();
-      $account_reciever->save();
-
-      $transaction = Transaction::create([
+      $schedule_task = Schedule_task::create([
           'type'   => 'transfer',
           'amount' => $amount,
-          // 'status' => true,
+          'date' => $date,
       ]);
-      $accounts_transaction = Accounts_transaction::create([
+      $account_schedule_task = Accounts_schedule_task::create([
           'account_id'   => $account_sender->id,
-          'transaction_id' => $transaction->id,
+          'schedule_task_id' => $schedule_task->id,
           'sending_type' => 'sender',
       ]);
-      $accounts_transaction = Accounts_transaction::create([
+      $account_schedule_task = Accounts_schedule_task::create([
           'account_id'   => $account_reciever->id,
-          'transaction_id' => $transaction->id,
+          'schedule_task_id' => $schedule_task->id,
           'sending_type' => 'receiver',
       ]);
     });
 
     return [
       'success' => true,
-      'message' => 'Transaction successful',
+      'message' => 'Scheduled transaction successful',
     ];
   }
 
