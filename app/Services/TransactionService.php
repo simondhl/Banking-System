@@ -28,24 +28,14 @@ class TransactionService
             return $validation;
         }
 
-<<<<<<< HEAD
-        // $approval = $this->runApprovalChain($amount, auth()->user());
-        // if (!$approval['approved']) {
-        //     return [
-        //         'success' => false,
-        //         'message' => $approval['message']
-        //     ];
-        // }
-=======
-    // auto approval or it needs a higher approval
-    $approval = $this->runApprovalChain($amount, auth()->user());
-    if (!$approval['approved']) {
-        return [
-            'success' => false,
-            'message' => $approval['message']
-        ];
-    }
->>>>>>> f04cadcb20aa0935984d40e3b3510e55c09fc371
+        // auto approval or it needs a higher approval
+        $approval = $this->runApprovalChain($amount, auth()->user());
+        if (!$approval['approved']) {
+            return [
+                'success' => false,
+                'message' => $approval['message']
+            ];
+        }
 
         // to make sure all transaction steps happened as a one block (ACID)
         DB::transaction(function () use ($account, $amount, $type) {
@@ -163,28 +153,6 @@ class TransactionService
         ];
     }
 
-<<<<<<< HEAD
-=======
-    // auto approval or it needs a higher approval
-    $approval = $this->runApprovalChain($amount, auth()->user());
-    if (!$approval['approved']) {
-        return [
-            'success' => false,
-            'message' => $approval['message']
-        ];
-    }
->>>>>>> f04cadcb20aa0935984d40e3b3510e55c09fc371
-
-    private function runApprovalChain($amount, $user)
-    {
-        $auto = new AutoApprovalHandler();
-        $manager = new ManagerApprovalHandler();
-
-        // Build the chain of responsibility
-        $auto->setNext($manager);
-
-        return $auto->handle($amount, $user);
-    }
     public function get_transaction_for_customer()
     {
         $user = Auth::user();
@@ -196,7 +164,6 @@ class TransactionService
             ->wherePivot('sending_type', 'sender')
             ->get();
 
-<<<<<<< HEAD
         $receivedTransactions = $account->transaction()
             ->wherePivot('sending_type', 'receiver')
             ->get();
@@ -226,17 +193,14 @@ class TransactionService
             'received' => $received,
         ];
     }
-=======
-  private function runApprovalChain($amount, $user)
-  {
-    $auto = new AutoApprovalHandler();
-    $manager = new ManagerApprovalHandler();
+    private function runApprovalChain($amount, $user)
+    {
+        $auto = new AutoApprovalHandler();
+        $manager = new ManagerApprovalHandler();
 
-    // Build the chain of responsibility
-    $auto->setNext($manager);
+        // Build the chain of responsibility
+        $auto->setNext($manager);
 
-    return $auto->handle($amount, $user);
-  }
->>>>>>> f04cadcb20aa0935984d40e3b3510e55c09fc371
-
+        return $auto->handle($amount, $user);
+    }
 }

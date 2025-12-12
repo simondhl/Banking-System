@@ -23,15 +23,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/CloseAccount/{id}', [AccountController::class, 'close_account']);
         Route::post('/SearchAccount', [AccountController::class, 'search_account']);
         Route::post('/UpdateAccount/{id}', [AccountController::class, 'update_account']);
-<<<<<<< HEAD
-        //Transactions: Deposis-withdrawal, Transfer between accounts
-        Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
-        Route::post('/Transfer', [TransactionController::class, 'transfer']);
-    });
-
-    // Manager Routes
-    Route::middleware('role:manager')->group(function () {
-=======
     //Transactions: Deposis-withdrawal, Transfer between accounts
     Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
     Route::post('/Transfer', [TransactionController::class, 'transfer']);
@@ -48,10 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
     // Route::post('/Transfer', [TransactionController::class, 'transfer']);
   });
->>>>>>> f04cadcb20aa0935984d40e3b3510e55c09fc371
 
         //Transactions: Deposis-withdrawal, Transfer between accounts
         Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
         Route::post('/Transfer', [TransactionController::class, 'transfer']);
     });
-});
