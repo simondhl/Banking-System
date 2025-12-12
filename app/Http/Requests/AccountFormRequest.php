@@ -28,7 +28,7 @@ class AccountFormRequest extends FormRequest
             'create_account' => [
                 'phone_number' => ['required', 'string', 'unique:users', new NoHtml],
                 'user_number' => ['required', 'string', 'unique:users', new NoHtml],
-                'national_number' => ['required', 'string', new NoHtml],
+                'national_number' => ['required', 'string','unique:users', new NoHtml],
                 'password' => ['required', 'confirmed', Password::min(8)
                     ->letters()
                     ->mixedCase()

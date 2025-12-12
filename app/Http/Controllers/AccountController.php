@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AccountFormRequest;
 use App\Services\AccountService;
-use Illuminate\Http\Request;
-
-use function PHPUnit\Framework\isEmpty;
 
 class AccountController extends Controller
 {
