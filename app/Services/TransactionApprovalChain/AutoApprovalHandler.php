@@ -6,10 +6,10 @@ class AutoApprovalHandler extends ApprovalHandler
 {
     public function handle(float $amount, $user)
     {
-        if ($amount <= 20000000) { 
+        if ($amount <= 10000000) { 
             return [
                 'approved' => true,
-                'message' => 'Auto approved.'
+                'message' => 'Auto approved'
             ];
         }
 

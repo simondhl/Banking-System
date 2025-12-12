@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         if (!$result) {
             return response()->json(['message' => 
-                'your email and password do not match, please try again'],401);
+                'The entered number and password do not match, please try again'],401);
         }
 
         return response()->json($result, 200);

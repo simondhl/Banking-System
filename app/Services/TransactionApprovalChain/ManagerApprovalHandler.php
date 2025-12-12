@@ -7,7 +7,7 @@ class ManagerApprovalHandler extends ApprovalHandler
 
     public function handle(float $amount, $user)
     {
-        if ($amount > 20000000) {
+        if ($amount > 10000000) {
 
             if ($user->role->role_name !== 'manager') {
                 return [
