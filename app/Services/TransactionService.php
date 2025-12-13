@@ -27,13 +27,16 @@ class TransactionService
         return $validation; 
     }
 
-    // auto approval or it needs a higher approval
-    $approval = $this->runApprovalChain($amount, auth()->user());
-    if (!$approval['approved']) {
-        return [
-            'success' => false,
-            'message' => $approval['message']
-        ];
+    // skip approval if called from schedule
+    if (!($request['from_schedule'] ?? false)) {
+      // auto approval or it needs a higher approval
+      $approval = $this->runApprovalChain($amount, auth()->user());
+      if (!$approval['approved']) {
+          return [
+              'success' => false,
+              'message' => $approval['message']
+          ];
+      }
     }
 
     // to make sure all transaction steps happened as a one block (ACID)
@@ -112,13 +115,16 @@ class TransactionService
         return $validation; 
     }
 
-    // auto approval or it needs a higher approval
-    $approval = $this->runApprovalChain($amount, auth()->user());
-    if (!$approval['approved']) {
-        return [
-            'success' => false,
-            'message' => $approval['message']
-        ];
+    // skip approval if called from schedule
+    if (!($request['from_schedule'] ?? false)) {
+      // auto approval or it needs a higher approval
+      $approval = $this->runApprovalChain($amount, auth()->user());
+      if (!$approval['approved']) {
+          return [
+              'success' => false,
+              'message' => $approval['message']
+          ];
+      }
     }
 
     // to make sure all transaction steps happened as a one block (ACID)
