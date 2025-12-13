@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\ScheduleTaskController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/Login', [AuthController::class, 'login']);
@@ -37,9 +38,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Manager Routes
     Route::middleware('role:manager')->group(function () {
-        Route::get('/GetInquiries',[InquiryController::class,'get_inquiries']);
+        Route::get('/GetInquiries', [InquiryController::class, 'get_inquiries']);
+
         //Transactions: Deposis-withdrawal, Transfer between accounts
         // Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
         // Route::post('/Transfer', [TransactionController::class, 'transfer']);
+        Route::post('/CreateEmployee', [UserController::class, 'create_employee']);
     });
 });

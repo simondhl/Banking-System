@@ -28,13 +28,16 @@ class TransactionService
             return $validation;
         }
 
-        // auto approval or it needs a higher approval
-        $approval = $this->runApprovalChain($amount, auth()->user());
-        if (!$approval['approved']) {
-            return [
-                'success' => false,
-                'message' => $approval['message']
-            ];
+        // skip approval if called from schedule
+        if (!($request['from_schedule'] ?? false)) {
+            // auto approval or it needs a higher approval
+            $approval = $this->runApprovalChain($amount, auth()->user());
+            if (!$approval['approved']) {
+                return [
+                    'success' => false,
+                    'message' => $approval['message']
+                ];
+            }
         }
 
         // to make sure all transaction steps happened as a one block (ACID)
@@ -113,13 +116,17 @@ class TransactionService
             return $validation;
         }
 
-        // $approval = $this->runApprovalChain($amount, auth()->user());
-        // if (!$approval['approved']) {
-        //     return [
-        //         'success' => false,
-        //         'message' => $approval['message']
-        //     ];
-        // }
+        // skip approval if called from schedule
+        if (!($request['from_schedule'] ?? false)) {
+            // auto approval or it needs a higher approval
+            $approval = $this->runApprovalChain($amount, auth()->user());
+            if (!$approval['approved']) {
+                return [
+                    'success' => false,
+                    'message' => $approval['message']
+                ];
+            }
+        }
 
         // to make sure all transaction steps happened as a one block (ACID)
         DB::transaction(function () use ($account_sender, $account_reciever, $amount) {
@@ -153,6 +160,17 @@ class TransactionService
         ];
     }
 
+
+    private function runApprovalChain($amount, $user)
+    {
+        $auto = new AutoApprovalHandler();
+        $manager = new ManagerApprovalHandler();
+
+        // Build the chain of responsibility
+        $auto->setNext($manager);
+
+        return $auto->handle($amount, $user);
+    }
     private function formatTransactions($transactions)
     {
         return $transactions->map(fn($t) => [
@@ -213,15 +231,5 @@ class TransactionService
         }
 
         return ['transactions' => $transactions];
-    }
-    private function runApprovalChain($amount, $user)
-    {
-        $auto = new AutoApprovalHandler();
-        $manager = new ManagerApprovalHandler();
-
-        // Build the chain of responsibility
-        $auto->setNext($manager);
-
-        return $auto->handle($amount, $user);
     }
 }
