@@ -153,45 +153,66 @@ class TransactionService
         ];
     }
 
+    private function formatTransactions($transactions)
+    {
+        return $transactions->map(fn($t) => [
+            'id'     => $t->id,
+            'type'   => $t->type,
+            'amount' => $t->amount,
+            'date'   => $t->created_at,
+        ]);
+    }
+    private function getTransactionsByType(Account $account)
+    {
+        $types = [
+            'sent'       => 'sender',
+            'received'   => 'receiver',
+            'deposit'    => 'deposit',
+            'withdrawal' => 'withdrawal',
+        ];
+
+        $result = [];
+
+        foreach ($types as $key => $type) {
+            $transactions = $account->transaction()
+                ->wherePivot('sending_type', $type)
+                ->get();
+
+            $result[$key] = $this->formatTransactions($transactions);
+        }
+
+        return $result;
+    }
+
     public function get_transaction_for_customer()
     {
-        $user = Auth::user();
-        $userNumber = $user->user_number;
+        $account = Account::where(
+            'account_number',
+            Auth::user()->user_number
+        )->first();
 
-        $account = Account::where('account_number', $userNumber)->first();
+        $transactions = $this->getTransactionsByType($account);
 
-        $sentTransactions = $account->transaction()
-            ->wherePivot('sending_type', 'sender')
-            ->get();
-
-        $receivedTransactions = $account->transaction()
-            ->wherePivot('sending_type', 'receiver')
-            ->get();
-
-        $sent = $sentTransactions->map(function ($t) {
-            return [
-                'id' => $t->id,
-                'type' => $t->type,
-                'amount' => $t->amount,
-                'date' => $t->created_at,
-            ];
-        });
-
-        $received = $receivedTransactions->map(function ($t) {
-            return [
-                'id' => $t->id,
-                'type' => $t->type,
-                'amount' => $t->amount,
-                'date' => $t->created_at,
-            ];
-        });
-        if ($sent->isEmpty() && $received->isEmpty()) {
+        if (collect($transactions)->every(fn($t) => $t->isEmpty())) {
             return ['message' => 'There is no transactions yet'];
         }
-        return [
-            'sent'    => $sent,
-            'received' => $received,
-        ];
+
+        return ['transactions' => $transactions];
+    }
+    public function get_transaction_for_employee(array $request)
+    {
+        $account = Account::where(
+            'account_number',
+            $request['account_number']
+        )->first();
+
+        $transactions = $this->getTransactionsByType($account);
+
+        if (collect($transactions)->every(fn($t) => $t->isEmpty())) {
+            return ['message' => 'There is no transactions yet'];
+        }
+
+        return ['transactions' => $transactions];
     }
     private function runApprovalChain($amount, $user)
     {

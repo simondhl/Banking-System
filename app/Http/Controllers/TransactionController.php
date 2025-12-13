@@ -32,4 +32,9 @@ class TransactionController extends Controller
         $result = $this->transactionService->get_transaction_for_customer();
         return response()->json($result, 200);
     }
+    public function get_transactions_for_employee(TransactionFormRequest $request){
+        $result = $this->transactionService->get_transaction_for_employee($request->validated());
+        return response()->json($result, 200);
+    }
+
 }

@@ -9,6 +9,6 @@ class Transaction extends Model
    protected $fillable = ['type','amount','status'];
 
    public function account(){
-      return $this->belongsToMany(Account::class);
+      return $this->belongsToMany(Account::class, 'accounts_transactions');
    }
 }

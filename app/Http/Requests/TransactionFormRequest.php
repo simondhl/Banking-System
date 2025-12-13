@@ -22,20 +22,23 @@ class TransactionFormRequest extends FormRequest
      */
     public function rules(): array
     {
-        return match($this->route()->getActionMethod()) {
-        
-          'deposit_or_withdrawal' => [
-            'transaction_type' => 'required|string',
-            'amount' => 'required',
-            'account_number' => ['required', 'string','exists:accounts,account_number', 'max:255', new NoHtml]
-          ],
-          'transfer' => [
-            'amount' => 'required',
-            'account_number_sender' => ['required', 'string','exists:accounts,account_number', 'max:255', new NoHtml],
-            'account_number_reciever' => ['required', 'string','exists:accounts,account_number', 'max:255', new NoHtml]
-          ],
+        return match ($this->route()->getActionMethod()) {
 
-          default => [],
+            'deposit_or_withdrawal' => [
+                'transaction_type' => 'required|string',
+                'amount' => 'required',
+                'account_number' => ['required', 'string', 'exists:accounts,account_number', 'max:255', new NoHtml]
+            ],
+            'transfer' => [
+                'amount' => 'required',
+                'account_number_sender' => ['required', 'string', 'exists:accounts,account_number', 'max:255', new NoHtml],
+                'account_number_reciever' => ['required', 'string', 'exists:accounts,account_number', 'max:255', new NoHtml]
+            ],
+            'get_transactions_for_employee' => [
+                'account_number' => ['required', 'string', 'exists:accounts', 'max:255']
+            ],
+
+            default => [],
         };
     }
 }

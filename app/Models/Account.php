@@ -31,7 +31,7 @@ class Account extends Model implements AccountComponent
     }
     public function transaction()
     {
-        return $this->belongsToMany(Transaction::class);
+        return $this->belongsToMany(Transaction::class,'accounts_transactions');
     }
     public function schedule_task()
     {

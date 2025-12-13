@@ -25,7 +25,7 @@ class ScheduleTaskService
     $validation = $this->validate_account_for_transaction($account, $type, $amount);
 
     if (!$validation['success']) {
-        return $validation; 
+        return $validation;
     }
 
     // auto approval or it needs a higher approval
@@ -39,7 +39,7 @@ class ScheduleTaskService
 
     // to make sure all transaction steps happened as a one block (ACID)
     DB::transaction(function () use ($account, $amount, $type, $date) {
-    
+
       $schedule_task = Schedule_task::create([
           'type'   => $type,
           'amount' => $amount,
@@ -63,7 +63,7 @@ class ScheduleTaskService
       // check the status of the account
       $invalidStatuses = ['frozen', 'suspended', 'closed'];
       $account_status = $account->account_status->status;
-      
+
       if (in_array($account_status, $invalidStatuses)) {
           return [
             'success' => false,
@@ -96,12 +96,12 @@ class ScheduleTaskService
     // validate if both accounts are able to do the transaction (sender and receiver)
     $validation = $this->validate_account_for_transaction($account_sender, 'transfer_sender', $amount);
     if (!$validation['success']) {
-        return $validation; 
+        return $validation;
     }
 
     $validation = $this->validate_account_for_transaction($account_reciever, 'transfer_reciever', $amount);
     if (!$validation['success']) {
-        return $validation; 
+        return $validation;
     }
 
     // auto approval or it needs a higher approval
