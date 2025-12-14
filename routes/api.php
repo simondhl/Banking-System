@@ -19,10 +19,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:customer')->group(function () {
         Route::get('/GetTransactionsForCustomar', [TransactionController::class, 'get_transactions_for_customer']);
         Route::post('/SendInquiry', [InquiryController::class, 'send_inquiry']);
+        Route::post('/SaveDeviceToken', [AuthController::class, 'save_device_token']);
     });
 
     // Employee Routes
-    Route::middleware('role:employee')->group(function () {
+    Route::middleware('role:employee,manager')->group(function () {
         Route::post('/CreateAccount', [AccountController::class, 'create_account']);
         Route::get('/CloseAccount/{id}', [AccountController::class, 'close_account']);
         Route::post('/SearchAccount', [AccountController::class, 'search_account']);
@@ -41,9 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:manager')->group(function () {
         Route::get('/GetInquiries', [InquiryController::class, 'get_inquiries']);
         Route::post('/GetReport', [ReportController::class, 'get_report_by_date']);
-        //Transactions: Deposis-withdrawal, Transfer between accounts
-        // Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
-        // Route::post('/Transfer', [TransactionController::class, 'transfer']);
         Route::post('/CreateEmployee', [UserController::class, 'create_employee']);
     });
 });

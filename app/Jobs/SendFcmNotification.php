@@ -45,7 +45,7 @@ class SendFcmNotification implements ShouldQueue
             "message" => [
                 "token" => $this->token,
                 "notification" => [
-                    "title" => "تنبيه جديد",
+                    "title" => "New transaction",
                     "body" => $this->message
                 ],
              

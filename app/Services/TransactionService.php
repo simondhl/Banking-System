@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Services\TransactionApprovalChain\AutoApprovalHandler;
 use App\Services\TransactionApprovalChain\ManagerApprovalHandler;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class TransactionService
@@ -182,24 +183,28 @@ class TransactionService
     }
     private function getTransactionsByType(Account $account)
     {
-        $types = [
-            'sent'       => 'sender',
-            'received'   => 'receiver',
-            'deposit'    => 'deposit',
-            'withdrawal' => 'withdrawal',
-        ];
-
-        $result = [];
-
-        foreach ($types as $key => $type) {
-            $transactions = $account->transaction()
-                ->wherePivot('sending_type', $type)
-                ->get();
-
-            $result[$key] = $this->formatTransactions($transactions);
-        }
-
-        return $result;
+        $cacheKey = "transactions:account:{$account->id}";
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($account) {
+            
+            $types = [
+                'sent'       => 'sender',
+                'received'   => 'receiver',
+                'deposit'    => 'deposit',
+                'withdrawal' => 'withdrawal',
+            ];
+        
+            $result = [];
+        
+            foreach ($types as $key => $type) {
+                $transactions = $account->transaction()
+                    ->wherePivot('sending_type', $type)
+                    ->get();
+            
+                $result[$key] = $this->formatTransactions($transactions);
+            }
+        
+            return $result;
+        });
     }
 
     public function get_transaction_for_customer()
