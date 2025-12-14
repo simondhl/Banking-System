@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ScheduleTaskController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -39,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Manager Routes
     Route::middleware('role:manager')->group(function () {
         Route::get('/GetInquiries', [InquiryController::class, 'get_inquiries']);
-
+        Route::post('/GetReport', [ReportController::class, 'get_report_by_date']);
         //Transactions: Deposis-withdrawal, Transfer between accounts
         // Route::post('/DepositOrWithdrawal', [TransactionController::class, 'deposit_or_withdrawal']);
         // Route::post('/Transfer', [TransactionController::class, 'transfer']);
