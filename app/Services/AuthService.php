@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Device_token;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +35,16 @@ class AuthService
   public function logout()
   {
     Auth::user()->currentAccessToken()->delete();
+  }
+
+  public function save_device_token(string $token)
+  {
+    $user = Auth::user();
+    
+    return Device_token::updateOrCreate(
+        ['token' => $token],
+        ['user_id' => $user->id,]
+    );
   }
 
 

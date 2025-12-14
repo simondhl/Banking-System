@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthFormRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -36,6 +36,16 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'you logged out successfully'
         ]);
+    }
+
+    public function save_device_token(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string'
+        ]);
+        $this->authService->save_device_token($request->token);
+        
+        return response()->json(['message' => 'Token has bees saved']);
     }
   
 }
